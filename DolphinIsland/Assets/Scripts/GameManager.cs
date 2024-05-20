@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
 
     private string firstGuessPuzzle, secondGuessPuzzle;
 
+    public GameObject GameWinPopUp;
+
     private void Awake()
     {
         puzzles = Resources.LoadAll<Sprite>("Images/island");
@@ -35,6 +37,8 @@ public class GameManager : MonoBehaviour
         GetButtons();
         AddListeners();
         AddGamePuzzles();
+        Shuffle(gamePuzzles);
+        gameGuesses = gamePuzzles.Count / 2;
     }
 
     void GetButtons()
@@ -103,7 +107,69 @@ public class GameManager : MonoBehaviour
             {
                 print("Puzzle don't Match");
             }
+
+            StartCoroutine(checkThePuzzleMatch());
         }
 
+    }
+
+    IEnumerator checkThePuzzleMatch()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        if (firstGuessPuzzle == secondGuessPuzzle)
+        {
+            yield return new WaitForSeconds(0.5f);
+            btns[firstGuessIndex].interactable = false;
+            btns[secondGuessIndex].interactable = false;
+
+            btns[firstGuessIndex].image.color = new Color(0, 0, 0, 0);
+            btns[secondGuessIndex].image.color = new Color(0, 0, 0, 0);
+
+            CheckTheGameFinished();
+
+        }
+        else
+        {
+            btns[firstGuessIndex].image.sprite = bgImage;
+            btns[secondGuessIndex].image.sprite = bgImage;
+        }
+        yield return new WaitForSeconds(0.5f);
+
+        firstGuess = secondGuess = false;
+    }
+
+    void CheckTheGameFinished()
+    {
+        countCorrectGuesses++;
+
+        if(countCorrectGuesses == gameGuesses)
+        {
+            print("Game Finished");
+            GameWinPopUp.SetActive(true);
+
+            print("It took you " + countGuesses + " ");
+        }
+    }
+
+    public void NextBtnClick()
+    {
+        print("next click");
+    }
+
+    public void RetryBtnCklick()
+    {
+        print("retry click");
+    }
+
+    void Shuffle(List<Sprite> list)
+    {
+        for(int i = 0; i < list.Count; i++) 
+        {
+            Sprite temp = list[i];
+            int randomIndex = Random.Range(i, list.Count);
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
     }
 }
