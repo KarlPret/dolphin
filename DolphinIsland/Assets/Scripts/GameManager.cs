@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,6 +29,18 @@ public class GameManager : MonoBehaviour
     public GameObject GameWinPopUp;
 
     public GameObject NextButtonMessagePanel;   //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL
+    public GameObject GameFinishedText;   //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING GAME/ LEVEL FINISHED
+
+    public AudioSource audioSource;     //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE GAME OVER
+    public AudioClip audioClip;     //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE GAME OVER
+    public AudioClip audioClip2;     //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MATCHING
+    public AudioClip audioClip3;     //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MIS-MATCHING
+
+    public TextMeshProUGUI MatchesText;    //NEW CODE 21 MAY 2024 - YOUR SCORE
+    public TextMeshProUGUI TurnsText;    //NEW CODE 21 MAY 2024 - YOUR TURNS
+    private int countGuesses2;   //NEW CODE 21 MAY 2024 - YOUR TURNS
+    public TextMeshProUGUI TotalScoreText;   //NEW CODE 21 MAY 2024 - YOUR TOTAL SCORE
+    public int totalScore;   //NEW CODE 21 MAY 2024 - YOUR TOTAL SCORE
 
     private void Awake()
     {
@@ -41,6 +55,9 @@ public class GameManager : MonoBehaviour
         AddGamePuzzles();
         Shuffle(gamePuzzles);
         gameGuesses = gamePuzzles.Count / 2;
+                
+        totalScore = PlayerPrefs.GetInt("Total Score");  //NEW CODE 21 MAY 2024 - LOAD TOTAL SCORE
+        TotalScoreText.text = " " + totalScore;
     }
 
     void GetButtons()
@@ -104,10 +121,31 @@ public class GameManager : MonoBehaviour
             if(firstGuessPuzzle == secondGuessPuzzle)
             {
                 print("Puzzle Match");
+
+                countGuesses++;     //NEW CODE 21 MAY 2024 - TRY TO COUNT AND DISPLAY GUESSES - NOT CORRECT!!!
+                MatchesText.text = " " + countGuesses;    //NEW CODE 21 MAY 2024 - YOUR SCORE
+
+                countGuesses2++;     //NEW CODE 21 MAY 2024 - TRY TO COUNT AND DISPLAY GUESSES - NOT CORRECT!!!
+                TurnsText.text = " " + countGuesses2;    //NEW CODE 21 MAY 2024 - YOUR TURNS
+
+                totalScore++;
+                TotalScoreText.text = " " + totalScore;   //NEW CODE 21 MAY 2024 - YOUR TOTAL SCORE
+                PlayerPrefs.SetInt("Total Score", totalScore);    //NEW CODE 21 MAY 2024 - SAVE TOTAL SCORE
+
+                audioSource.Stop();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MATCHING SOUND
+                audioSource.clip = audioClip2;    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MATCHING SOUND
+                audioSource.Play();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MATCHING SOUND
             }
             else
             {
                 print("Puzzle don't Match");
+
+                countGuesses2++;     //NEW CODE 21 MAY 2024 - TRY TO COUNT AND DISPLAY GUESSES - NOT CORRECT!!!
+                TurnsText.text = " " + countGuesses2;    //NEW CODE 21 MAY 2024 - YOUR TURNS
+
+                audioSource.Stop();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MIS-MATCHING SOUND
+                audioSource.clip = audioClip3;    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MIS-MATCHING SOUND
+                audioSource.Play();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE MIS-MATCHING SOUND
             }
 
             StartCoroutine(checkThePuzzleMatch());
@@ -121,7 +159,7 @@ public class GameManager : MonoBehaviour
 
         if (firstGuessPuzzle == secondGuessPuzzle)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             btns[firstGuessIndex].interactable = false;
             btns[secondGuessIndex].interactable = false;
 
@@ -136,7 +174,7 @@ public class GameManager : MonoBehaviour
             btns[firstGuessIndex].image.sprite = bgImage;
             btns[secondGuessIndex].image.sprite = bgImage;
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         firstGuess = secondGuess = false;
     }
@@ -145,12 +183,22 @@ public class GameManager : MonoBehaviour
     {
         countCorrectGuesses++;
 
-        if(countCorrectGuesses == gameGuesses)
+        //countGuesses++;     //NEW CODE 21 MAY 2024 - TRY TO COUNT AND DISPLAY GUESSES - NOT CORRECT!!!
+
+        if (countCorrectGuesses == gameGuesses)
         {
             print("Game Finished");
+
+            audioSource.Stop();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE GAME OVER
+            audioSource.clip = audioClip;    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE GAME OVER
+            audioSource.Play();    //NEW CODE 21 MAY 2024 - ADDED sFX TO INDICATE GAME OVER
+            GameFinishedText.SetActive(true);   //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL
+            StartCoroutine(WaitForGameFinishedTextClose());   //NEW CODE 21 MAY 2024 - TO CLOSE FLASH MESSAGE REGARDING NEXT LEVEL
+
             GameWinPopUp.SetActive(true);
 
-            print("It took you " + countGuesses + " ");
+            print("It took you " + countGuesses + " Guesses");     //THIS IS NOT WORKING IN GAME - FIX!!! WRONG VARIABLE I THINK...
+            //MatchesText.text = " " + countGuesses;    //NEW CODE 21 MAY 2024 - YOUR SCORE
         }
     }
 
@@ -158,9 +206,9 @@ public class GameManager : MonoBehaviour
     {
         print("next click");
 
-        NextButtonMessagePanel.SetActive(true);
+        NextButtonMessagePanel.SetActive(true);        //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL
 
-        StartCoroutine(WaitForNextMessagePanelClose());
+        StartCoroutine(WaitForNextMessagePanelClose());        //NEW CODE 21 MAY 2024 - TO CLOSE FLASH MESSAGE REGARDING NEXT LEVEL
     }
 
     public void RetryBtnCklick()
@@ -179,10 +227,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL
     IEnumerator WaitForNextMessagePanelClose()
     {
         yield return new WaitForSeconds(2.1f);
 
         NextButtonMessagePanel.SetActive(false);
     }
+    //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL END
+
+    //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING GAME/ LEVEL FINISHED
+    IEnumerator WaitForGameFinishedTextClose()
+    {
+        yield return new WaitForSeconds(3.1f);
+
+        GameFinishedText.SetActive(false);
+    }
+    //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING GAME/ LEVEL FINISHED END
 }
