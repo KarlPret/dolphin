@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject GameWinPopUp;
 
+    public GameObject NextButtonMessagePanel;   //NEW CODE 21 MAY 2024 - TO FLASH MESSAGE REGARDING NEXT LEVEL
+
     private void Awake()
     {
         puzzles = Resources.LoadAll<Sprite>("Images/island");
@@ -155,6 +157,10 @@ public class GameManager : MonoBehaviour
     public void NextBtnClick()
     {
         print("next click");
+
+        NextButtonMessagePanel.SetActive(true);
+
+        StartCoroutine(WaitForNextMessagePanelClose());
     }
 
     public void RetryBtnCklick()
@@ -171,5 +177,12 @@ public class GameManager : MonoBehaviour
             list[i] = list[randomIndex];
             list[randomIndex] = temp;
         }
+    }
+
+    IEnumerator WaitForNextMessagePanelClose()
+    {
+        yield return new WaitForSeconds(2.1f);
+
+        NextButtonMessagePanel.SetActive(false);
     }
 }
