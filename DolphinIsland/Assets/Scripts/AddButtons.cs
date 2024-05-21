@@ -9,7 +9,7 @@ public class AddButtons : MonoBehaviour
 
     [SerializeField]
     private GameObject button;
-
+    
     private void Awake()
     {
         for (int i = 0; i < 8; i++) 
@@ -19,7 +19,38 @@ public class AddButtons : MonoBehaviour
             _button.transform.SetParent(puzzleField, false);
         }
     }
+    
+    /*
+    public void EasyGame()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            GameObject _button = Instantiate(button);
+            _button.name = "" + i;
+            _button.transform.SetParent(puzzleField, false);
+        }
+    }
 
+    public void MediumGame()
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            GameObject _button = Instantiate(button);
+            _button.name = "" + i;
+            _button.transform.SetParent(puzzleField, false);
+        }
+    }
+
+    public void HardGame()
+    {
+        for (int i = 0; i < 24; i++)
+        {
+            GameObject _button = Instantiate(button);
+            _button.name = "" + i;
+            _button.transform.SetParent(puzzleField, false);
+        }
+    }
+    */
     // Start is called before the first frame update
     void Start()
     {

@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
         gameGuesses = gamePuzzles.Count / 2;
                 
         totalScore = PlayerPrefs.GetInt("Total Score");  //NEW CODE 21 MAY 2024 - LOAD TOTAL SCORE
-        TotalScoreText.text = " " + totalScore;
+        TotalScoreText.text = " " + totalScore;   //NEW CODE 21 MAY 2024 - YOUR TOTAL SCORE
     }
 
     void GetButtons()
